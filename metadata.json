@@ -1,0 +1,6 @@
+{
+  "name": "KTN Corporate Website",
+  "description": "Website chính thức của Công ty Cổ phần Công nghệ Năng lượng và Xây dựng KTN",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
