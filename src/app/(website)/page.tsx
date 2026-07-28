@@ -12,6 +12,7 @@ import {
   MonitorCog,
   ShieldCheck,
   SunMedium,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LeadForm } from "@/components/forms/lead-form";
@@ -64,6 +65,69 @@ const stepColors = [
   { num: "text-navy", badge: "bg-navy/10 text-navy", bar: "bg-navy" },
 ];
 
+const coreValues = [
+  {
+    Icon: ShieldCheck,
+    number: "01",
+    title: "Trung thực",
+    description:
+      "Tư vấn dựa trên hiện trạng và nhu cầu thật của khách hàng; nói rõ phần làm được, giới hạn và điều kiện thực hiện — không hứa quá để lấy lòng tin trước mắt.",
+    circleBg: "bg-navy",
+    circleShadow: "shadow-slate-900/25",
+    iconColor: "text-white",
+    bar: "bg-navy",
+    glow: "bg-navy/8",
+  },
+  {
+    Icon: ClipboardCheck,
+    number: "02",
+    title: "Trách nhiệm",
+    description:
+      "Theo sát công việc đã nhận từ đầu đến khi bàn giao, chủ động phối hợp và chịu trách nhiệm trong đúng phạm vi đã cam kết.",
+    circleBg: "bg-cyan",
+    circleShadow: "shadow-cyan/30",
+    iconColor: "text-white",
+    bar: "bg-cyan",
+    glow: "bg-cyan/8",
+  },
+  {
+    Icon: Compass,
+    number: "03",
+    title: "Thực tế",
+    description:
+      "Ưu tiên giải pháp phù hợp với nguồn lực và điều kiện thật, có thể triển khai và vận hành lâu dài — thay vì chạy theo hình thức hay xu hướng nhất thời.",
+    circleBg: "bg-orange",
+    circleShadow: "shadow-orange/30",
+    iconColor: "text-white",
+    bar: "bg-orange",
+    glow: "bg-orange/8",
+  },
+  {
+    Icon: Handshake,
+    number: "04",
+    title: "Hợp tác",
+    description:
+      "Tôn trọng khách hàng, đối tác và người trực tiếp thực hiện; lấy sự rõ ràng làm nền tảng để phối hợp lâu dài, không chỉ cho một lần giao dịch.",
+    circleBg: "bg-yellow",
+    circleShadow: "shadow-yellow/30",
+    iconColor: "text-amber-950",
+    bar: "bg-yellow",
+    glow: "bg-yellow/15",
+  },
+  {
+    Icon: Zap,
+    number: "05",
+    title: "Năng động",
+    description:
+      "Chủ động cập nhật công nghệ, cách làm mới và phản hồi nhanh với nhu cầu khách hàng; không rập khuôn theo lối cũ khi điều đó không còn phù hợp.",
+    circleBg: "bg-gradient-to-br from-cyan to-orange",
+    circleShadow: "shadow-cyan/20",
+    iconColor: "text-white",
+    bar: "bg-gradient-to-r from-cyan to-orange",
+    glow: "bg-cyan/8",
+  },
+];
+
 export default async function HomePage() {
   const [projects, posts] = await Promise.all([
     getPublishedProjects({ limit: 3 }),
@@ -86,7 +150,6 @@ export default async function HomePage() {
                 <span className="text-2xl font-bold text-slate-400 lg:text-3xl">— Đồng bộ &amp; Thực tế.</span>
               </h1>
 
-              {/* Tri-color rule */}
               <div className="mt-6 flex gap-1.5">
                 <span className="h-1 w-20 rounded-full bg-cyan" />
                 <span className="h-1 w-10 rounded-full bg-orange" />
@@ -209,7 +272,6 @@ export default async function HomePage() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {/* Tech */}
             <div className="group flex flex-col overflow-hidden rounded-3xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl">
               <div className="h-2 bg-cyan" />
               <div className="flex flex-1 flex-col p-7">
@@ -238,7 +300,6 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Solar */}
             <div className="group flex flex-col overflow-hidden rounded-3xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl">
               <div className="h-2 bg-orange" />
               <div className="flex flex-1 flex-col p-7">
@@ -267,7 +328,6 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Build */}
             <div className="group flex flex-col overflow-hidden rounded-3xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl md:col-span-2 lg:col-span-1">
               <div className="h-2 bg-yellow" />
               <div className="flex flex-1 flex-col p-7">
@@ -299,39 +359,72 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── 3. VALUES on NAVY ── */}
-      <section className="section-shell bg-navy text-white">
+      {/* ── 3. CORE VALUES ── */}
+      <section className="section-shell bg-white">
         <div className="site-container">
-          <div className="mb-12 text-center">
-            <p className="section-kicker justify-center !text-cyan">Triết lý hành động</p>
-            <h2 className="mt-2 text-balance text-3xl font-extrabold sm:text-4xl">
-              Nguyên tắc làm việc của chúng tôi
+          <div className="mb-14 text-center">
+            <p className="section-kicker justify-center">Giá trị cốt lõi</p>
+            <h2 className="mt-2 text-balance text-3xl font-extrabold text-navy sm:text-4xl">
+              Năm giá trị định hướng mọi hoạt động
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-white/60">
-              Không theo đuổi việc làm tất cả mọi thứ, mà tập trung làm thật tốt những cam kết với khách hàng.
-              Sự cẩn trọng, thực tế và minh bạch là nền tảng cốt lõi trong mọi dự án.
+            <p className="mx-auto mt-4 max-w-xl text-base leading-8 text-slate-500">
+              Không phải khẩu hiệu — đây là cách chúng tôi thực sự làm việc với từng khách hàng, từng dự án.
             </p>
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              { Icon: Compass, title: "Thực tế", text: "Xuất phát từ nhu cầu và điều kiện thật của từng khách hàng, không tư vấn dư thừa.", cardCls: "border-cyan/30 hover:border-cyan/60", iconCls: "bg-cyan/20 text-cyan" },
-              { Icon: ClipboardCheck, title: "Rõ ràng", text: "Làm rõ phạm vi, chi phí và thời gian bàn giao ngay từ giai đoạn đầu tiên.", cardCls: "border-orange/30 hover:border-orange/60", iconCls: "bg-orange/20 text-orange" },
-              { Icon: Layers3, title: "Đồng bộ", text: "Kết nối nhịp nhàng giữa công nghệ, năng lượng và xây dựng trong cùng một đầu mối.", cardCls: "border-yellow/30 hover:border-yellow/60", iconCls: "bg-yellow/20 text-yellow" },
-              { Icon: Handshake, title: "Đồng hành", text: "Giữ kênh trao đổi xuyên suốt và hỗ trợ kỹ thuật tận tâm sau khi nghiệm thu.", cardCls: "border-white/20 hover:border-white/40", iconCls: "bg-white/20 text-white" },
-            ].map(({ Icon, title, text, cardCls, iconCls }) => (
-              <div key={title} className={`rounded-3xl border bg-white/5 p-6 transition duration-300 hover:-translate-y-1 ${cardCls}`}>
-                <div className={`grid size-12 place-items-center rounded-2xl ${iconCls}`}>
-                  <Icon className="size-6" />
+          {/*
+            6-col grid trick:
+            Row 1: 3 cards × col-span-2 = fills 6 cols
+            Row 2: 1 hidden spacer + 2 cards × col-span-2 = fills 5 cols (col 6 empty → centered)
+          */}
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-6">
+            {coreValues.slice(0, 3).map((v) => (
+              <div
+                key={v.title}
+                className="group flex flex-col items-center rounded-3xl bg-slate-50 p-8 text-center shadow-sm transition duration-300 hover:-translate-y-2 hover:bg-white hover:shadow-xl lg:col-span-2"
+              >
+                {/* Outer glow ring */}
+                <div className={`mb-6 rounded-full p-3 ${v.glow} transition duration-300 group-hover:scale-105`}>
+                  {/* Circle */}
+                  <div className={`relative grid size-24 place-items-center rounded-full ${v.circleBg} shadow-xl ${v.circleShadow}`}>
+                    <v.Icon className={`size-10 ${v.iconColor}`} />
+                    {/* Number badge */}
+                    <span className="absolute -right-1 -top-1 flex size-7 items-center justify-center rounded-full border-2 border-white bg-white text-[11px] font-black text-navy shadow-md">
+                      {v.number}
+                    </span>
+                  </div>
                 </div>
-                <h3 className="mt-5 text-xl font-extrabold text-white">{title}</h3>
-                <p className="mt-2 text-sm leading-6 text-white/60">{text}</p>
+                <h3 className="text-2xl font-extrabold text-navy">{v.title}</h3>
+                <div className={`mx-auto mt-2 h-0.5 w-12 rounded-full ${v.bar}`} />
+                <p className="mt-4 text-sm leading-7 text-slate-600">{v.description}</p>
+              </div>
+            ))}
+
+            {/* Spacer to center the last 2 cards */}
+            <div className="hidden lg:block" />
+
+            {coreValues.slice(3).map((v) => (
+              <div
+                key={v.title}
+                className="group flex flex-col items-center rounded-3xl bg-slate-50 p-8 text-center shadow-sm transition duration-300 hover:-translate-y-2 hover:bg-white hover:shadow-xl lg:col-span-2"
+              >
+                <div className={`mb-6 rounded-full p-3 ${v.glow} transition duration-300 group-hover:scale-105`}>
+                  <div className={`relative grid size-24 place-items-center rounded-full ${v.circleBg} shadow-xl ${v.circleShadow}`}>
+                    <v.Icon className={`size-10 ${v.iconColor}`} />
+                    <span className="absolute -right-1 -top-1 flex size-7 items-center justify-center rounded-full border-2 border-white bg-white text-[11px] font-black text-navy shadow-md">
+                      {v.number}
+                    </span>
+                  </div>
+                </div>
+                <h3 className="text-2xl font-extrabold text-navy">{v.title}</h3>
+                <div className={`mx-auto mt-2 h-0.5 w-12 rounded-full ${v.bar}`} />
+                <p className="mt-4 text-sm leading-7 text-slate-600">{v.description}</p>
               </div>
             ))}
           </div>
 
-          <div className="mt-10 text-center">
-            <Button asChild variant="outline" className="border-white/30 font-bold text-white hover:bg-white hover:text-navy">
+          <div className="mt-12 text-center">
+            <Button asChild variant="outline" className="border-navy/30 font-bold text-navy hover:bg-navy hover:text-white">
               <Link href="/gioi-thieu">Tìm hiểu về chúng tôi <ArrowRight className="size-4" /></Link>
             </Button>
           </div>
@@ -408,9 +501,7 @@ export default async function HomePage() {
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="section-kicker">Tin tức &amp; Hoạt động</p>
-              <h2 className="mt-2 text-3xl font-extrabold text-navy sm:text-4xl">
-                Thông tin mới nhất
-              </h2>
+              <h2 className="mt-2 text-3xl font-extrabold text-navy sm:text-4xl">Thông tin mới nhất</h2>
             </div>
             <Link href="/tin-tuc" className="inline-flex items-center gap-2 text-sm font-extrabold text-primary hover:text-navy">
               Xem tất cả bài viết <ArrowRight className="size-4" />
@@ -442,7 +533,6 @@ export default async function HomePage() {
                 khảo sát và lập phương án phù hợp.
               </p>
             </div>
-
             <div className="rounded-3xl border border-slate-200 bg-white p-6">
               <h3 className="font-extrabold text-navy">Cam kết bảo mật thông tin:</h3>
               <ul className="mt-3 space-y-2.5 text-xs font-bold text-slate-600">
@@ -456,7 +546,6 @@ export default async function HomePage() {
                 </li>
               </ul>
             </div>
-
             <div className="grid grid-cols-3 gap-3">
               {[
                 { value: "03", label: "Lĩnh vực", cls: "text-cyan" },
