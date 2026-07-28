@@ -1,0 +1,155 @@
+name: Sync Env Vars to Vercel
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sync-env:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync environment variables to Vercel project
+        uses: actions/github-script@v7
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          LEAD_IP_SALT: ${{ secrets.LEAD_IP_SALT }}
+          LEAD_NOTIFICATION_EMAIL: ${{ secrets.LEAD_NOTIFICATION_EMAIL }}
+          NEXT_PUBLIC_CONTACT_ADDRESS: ${{ secrets.NEXT_PUBLIC_CONTACT_ADDRESS }}
+          NEXT_PUBLIC_CONTACT_EMAIL: ${{ secrets.NEXT_PUBLIC_CONTACT_EMAIL }}
+          NEXT_PUBLIC_CONTACT_PHONE: ${{ secrets.NEXT_PUBLIC_CONTACT_PHONE }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_ZALO_URL: ${{ secrets.NEXT_PUBLIC_ZALO_URL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_SECURE: ${{ secrets.SMTP_SECURE }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        with:
+          script: |
+            const token = process.env.VERCEL_TOKEN;
+            const PROJECT_NAME = 'ktn-website';
+
+            const envVars = {
+              EMAIL_FROM:                        process.env.EMAIL_FROM,
+              LEAD_IP_SALT:                      process.env.LEAD_IP_SALT,
+              LEAD_NOTIFICATION_EMAIL:           process.env.LEAD_NOTIFICATION_EMAIL,
+              NEXT_PUBLIC_CONTACT_ADDRESS:       process.env.NEXT_PUBLIC_CONTACT_ADDRESS,
+              NEXT_PUBLIC_CONTACT_EMAIL:         process.env.NEXT_PUBLIC_CONTACT_EMAIL,
+              NEXT_PUBLIC_CONTACT_PHONE:         process.env.NEXT_PUBLIC_CONTACT_PHONE,
+              NEXT_PUBLIC_SITE_URL:              process.env.NEXT_PUBLIC_SITE_URL,
+              NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+              NEXT_PUBLIC_SUPABASE_URL:          process.env.NEXT_PUBLIC_SUPABASE_URL,
+              NEXT_PUBLIC_ZALO_URL:              process.env.NEXT_PUBLIC_ZALO_URL,
+              RESEND_API_KEY:                    process.env.RESEND_API_KEY,
+              SMTP_HOST:                         process.env.SMTP_HOST,
+              SMTP_PASS:                         process.env.SMTP_PASS,
+              SMTP_PORT:                         process.env.SMTP_PORT,
+              SMTP_SECURE:                       process.env.SMTP_SECURE,
+              SMTP_USER:                         process.env.SMTP_USER,
+              SUPABASE_SECRET_KEY:               process.env.SUPABASE_SECRET_KEY,
+            };
+
+            const headers = {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            };
+
+            // Find the project by name
+            let project;
+            const directRes = await fetch(
+              `https://api.vercel.com/v9/projects/${PROJECT_NAME}`,
+              { headers }
+            );
+            if (directRes.ok) {
+              project = await directRes.json();
+            } else {
+              const listRes = await fetch(
+                'https://api.vercel.com/v9/projects?limit=100',
+                { headers }
+              );
+              const listData = await listRes.json();
+              project = (listData.projects || []).find(p => p.name === PROJECT_NAME);
+              if (!project) throw new Error(`Project "${PROJECT_NAME}" not found in Vercel account.`);
+            }
+
+            const projectId = project.id;
+            const teamId = project.accountId || '';
+            const teamParam = teamId ? `?teamId=${teamId}` : '';
+            console.log(`Project: ${project.name} (${projectId})`);
+
+            // Get existing env vars
+            const existingRes = await fetch(
+              `https://api.vercel.com/v9/projects/${projectId}/env${teamParam}`,
+              { headers }
+            );
+            const existingData = await existingRes.json();
+            const existingMap = {};
+            for (const env of (existingData.envs || [])) {
+              if (!existingMap[env.key]) existingMap[env.key] = [];
+              existingMap[env.key].push(env);
+            }
+
+            let created = 0, updated = 0, skipped = 0;
+
+            for (const [key, value] of Object.entries(envVars)) {
+              if (!value) {
+                console.log(`⚠️  SKIP  ${key} — GitHub Secret not set`);
+                skipped++;
+                continue;
+              }
+
+              const existing = existingMap[key];
+
+              if (existing && existing.length > 0) {
+                const envId = existing[0].id;
+                const patchRes = await fetch(
+                  `https://api.vercel.com/v9/projects/${projectId}/env/${envId}${teamParam}`,
+                  {
+                    method: 'PATCH',
+                    headers,
+                    body: JSON.stringify({
+                      value,
+                      type: 'encrypted',
+                      target: ['production', 'preview'],
+                    }),
+                  }
+                );
+                if (!patchRes.ok) {
+                  const err = await patchRes.text();
+                  console.error(`❌ UPDATE ${key}: ${err}`);
+                } else {
+                  console.log(`✅ UPDATED ${key}`);
+                  updated++;
+                }
+              } else {
+                const postRes = await fetch(
+                  `https://api.vercel.com/v9/projects/${projectId}/env${teamParam}`,
+                  {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify({
+                      key,
+                      value,
+                      type: 'encrypted',
+                      target: ['production', 'preview'],
+                    }),
+                  }
+                );
+                if (!postRes.ok) {
+                  const err = await postRes.text();
+                  console.error(`❌ CREATE ${key}: ${err}`);
+                } else {
+                  console.log(`✅ CREATED ${key}`);
+                  created++;
+                }
+              }
+            }
+
+            console.log(`\nDone: ${created} created, ${updated} updated, ${skipped} skipped (no secret value)`);
+            if (skipped > 0) {
+              console.log('Add the missing secrets in: GitHub repo → Settings → Secrets → Actions');
+            }
