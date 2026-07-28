@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Eye, Flag, Handshake, Layers3, Scale, ShieldCheck } from "lucide-react";
+import { Eye, Flag, Handshake, Layers3, Scale, ShieldCheck, Zap } from "lucide-react";
 import { PageHero } from "@/components/site/page-hero";
 import { createMetadata } from "@/lib/seo";
 
@@ -15,6 +15,7 @@ const values = [
   { Icon: ShieldCheck, title: "Trách nhiệm", text: "Theo sát công việc đã nhận, chủ động phối hợp và chịu trách nhiệm trong phạm vi cam kết." },
   { Icon: Layers3, title: "Thực tế", text: "Ưu tiên giải pháp phù hợp nguồn lực, có thể triển khai và vận hành thay vì chạy theo hình thức." },
   { Icon: Handshake, title: "Hợp tác", text: "Tôn trọng khách hàng, đối tác và người thực hiện; lấy sự rõ ràng làm nền tảng phối hợp lâu dài." },
+  { Icon: Zap, title: "Năng động", text: "Chủ động cập nhật công nghệ, cách làm mới và phản hồi nhanh với nhu cầu khách hàng; không rập khuôn khi điều đó không còn phù hợp." },
 ];
 
 export default function AboutPage() {
@@ -79,21 +80,23 @@ export default function AboutPage() {
         <div className="site-container">
           <div className="mx-auto max-w-3xl text-center">
             <p className="section-kicker justify-center">Giá trị cốt lõi</p>
-            <h2 className="mt-3 text-3xl font-extrabold text-navy sm:text-4xl">4 Nguyên tắc hành động tại KTN</h2>
+            <h2 className="mt-3 text-3xl font-extrabold text-navy sm:text-4xl">5 Nguyên tắc hành động tại KTN</h2>
           </div>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
             {values.map(({ Icon, title, text }, idx) => {
               const borderColors = [
                 "border-cyan/30 hover:border-cyan",
                 "border-orange/30 hover:border-orange",
                 "border-yellow-500/40 hover:border-yellow-500",
                 "border-navy/30 hover:border-navy",
+                "border-cyan/30 hover:border-orange",
               ][idx];
               const iconBg = [
                 "bg-cyan/15 text-cyan",
                 "bg-orange/15 text-orange",
                 "bg-yellow/20 text-amber-900",
                 "bg-navy/10 text-navy",
+                "bg-gradient-to-br from-cyan/20 to-orange/20 text-cyan",
               ][idx];
 
               return (
