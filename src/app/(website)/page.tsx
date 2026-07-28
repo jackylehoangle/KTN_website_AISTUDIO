@@ -79,11 +79,6 @@ export default async function HomePage() {
 
             {/* Left: Identity & CTA */}
             <div>
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan/30 bg-cyan/5 px-4 py-1.5 text-xs font-extrabold uppercase tracking-widest text-cyan">
-                <span className="size-1.5 animate-pulse rounded-full bg-cyan" />
-                KTN — Công ty Cổ phần Công nghệ Năng lượng &amp; Xây dựng
-              </div>
-
               <h1 className="text-balance text-5xl font-black leading-[1.1] tracking-tight text-navy lg:text-[3.75rem]">
                 Công nghệ.<br />
                 <span className="text-orange">Năng lượng.</span><br />
@@ -99,7 +94,7 @@ export default async function HomePage() {
               </div>
 
               <p className="mt-6 max-w-lg text-base leading-8 text-slate-600">
-                KTN hợp nhất ba lĩnh vực chuyên sâu, giúp doanh nghiệp và gia đình tối ưu vận hành,
+                Hợp nhất ba lĩnh vực chuyên sâu, giúp doanh nghiệp và gia đình tối ưu vận hành,
                 khai thác năng lượng sạch và nâng tầm hạ tầng công trình — trong cùng một đầu mối tin cậy.
               </p>
 
@@ -137,7 +132,6 @@ export default async function HomePage() {
                   <MonitorCog className="size-7" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs font-bold uppercase tracking-wider text-white/70">KTN Tech</p>
                   <p className="text-xl font-black">Công nghệ &amp; Chuyển đổi số</p>
                   <p className="mt-0.5 text-sm text-white/70">Website · Phần mềm · Tự động hóa</p>
                 </div>
@@ -150,7 +144,6 @@ export default async function HomePage() {
                   <SunMedium className="size-7" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs font-bold uppercase tracking-wider text-white/70">KTN Solar</p>
                   <p className="text-xl font-black">Điện mặt trời</p>
                   <p className="mt-0.5 text-sm text-white/70">Gia đình · Doanh nghiệp · Nhà xưởng</p>
                 </div>
@@ -163,7 +156,6 @@ export default async function HomePage() {
                   <Building2 className="size-7" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs font-bold uppercase tracking-wider text-amber-800">KTN Build</p>
                   <p className="text-xl font-black">Xây dựng &amp; Cải tạo</p>
                   <p className="mt-0.5 text-sm text-amber-800">Nhà ở · Văn phòng · Hạ tầng</p>
                 </div>
@@ -225,7 +217,7 @@ export default async function HomePage() {
                   <div className="grid size-14 place-items-center rounded-2xl bg-cyan text-white shadow-md shadow-cyan/30">
                     <MonitorCog className="size-7" />
                   </div>
-                  <span className="rounded-full bg-cyan/10 px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-cyan">KTN Tech</span>
+                  <span className="rounded-full bg-cyan/10 px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-cyan">Giải pháp công nghệ</span>
                 </div>
                 <h3 className="mt-5 text-2xl font-extrabold text-navy">Công nghệ</h3>
                 <p className="mt-2 flex-1 text-sm leading-6 text-slate-600">
@@ -240,7 +232,7 @@ export default async function HomePage() {
                 </ul>
                 <div className="mt-7 border-t border-slate-100 pt-4">
                   <Link href="/linh-vuc/ktn-tech" className="inline-flex items-center gap-2 text-sm font-extrabold text-cyan hover:underline">
-                    Tìm hiểu KTN Tech <ArrowRight className="size-4" />
+                    Tìm hiểu thêm <ArrowRight className="size-4" />
                   </Link>
                 </div>
               </div>
@@ -254,7 +246,7 @@ export default async function HomePage() {
                   <div className="grid size-14 place-items-center rounded-2xl bg-orange text-white shadow-md shadow-orange/30">
                     <SunMedium className="size-7" />
                   </div>
-                  <span className="rounded-full bg-orange/10 px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-orange">KTN Solar</span>
+                  <span className="rounded-full bg-orange/10 px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-orange">Điện mặt trời</span>
                 </div>
                 <h3 className="mt-5 text-2xl font-extrabold text-navy">Năng lượng</h3>
                 <p className="mt-2 flex-1 text-sm leading-6 text-slate-600">
@@ -269,7 +261,7 @@ export default async function HomePage() {
                 </ul>
                 <div className="mt-7 border-t border-slate-100 pt-4">
                   <Link href="/linh-vuc/ktn-solar" className="inline-flex items-center gap-2 text-sm font-extrabold text-orange hover:underline">
-                    Tìm hiểu KTN Solar <ArrowRight className="size-4" />
+                    Tìm hiểu thêm <ArrowRight className="size-4" />
                   </Link>
                 </div>
               </div>
@@ -283,7 +275,7 @@ export default async function HomePage() {
                   <div className="grid size-14 place-items-center rounded-2xl bg-yellow text-amber-900 shadow-md shadow-yellow/30">
                     <Building2 className="size-7" />
                   </div>
-                  <span className="rounded-full bg-yellow/20 px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-amber-900">KTN Build</span>
+                  <span className="rounded-full bg-yellow/20 px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-amber-900">Thi công &amp; Cải tạo</span>
                 </div>
                 <h3 className="mt-5 text-2xl font-extrabold text-navy">Xây dựng &amp; Cải tạo</h3>
                 <p className="mt-2 flex-1 text-sm leading-6 text-slate-600">
@@ -298,7 +290,7 @@ export default async function HomePage() {
                 </ul>
                 <div className="mt-7 border-t border-slate-100 pt-4">
                   <Link href="/linh-vuc/ktn-build" className="inline-flex items-center gap-2 text-sm font-extrabold text-amber-800 hover:underline">
-                    Tìm hiểu KTN Build <ArrowRight className="size-4" />
+                    Tìm hiểu thêm <ArrowRight className="size-4" />
                   </Link>
                 </div>
               </div>
@@ -313,10 +305,10 @@ export default async function HomePage() {
           <div className="mb-12 text-center">
             <p className="section-kicker justify-center !text-cyan">Triết lý hành động</p>
             <h2 className="mt-2 text-balance text-3xl font-extrabold sm:text-4xl">
-              Nguyên tắc làm việc của KTN
+              Nguyên tắc làm việc của chúng tôi
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-white/60">
-              KTN không theo đuổi việc làm tất cả mọi thứ, mà tập trung làm thật tốt những cam kết với khách hàng.
+              Không theo đuổi việc làm tất cả mọi thứ, mà tập trung làm thật tốt những cam kết với khách hàng.
               Sự cẩn trọng, thực tế và minh bạch là nền tảng cốt lõi trong mọi dự án.
             </p>
           </div>
@@ -340,7 +332,7 @@ export default async function HomePage() {
 
           <div className="mt-10 text-center">
             <Button asChild variant="outline" className="border-white/30 font-bold text-white hover:bg-white hover:text-navy">
-              <Link href="/gioi-thieu">Tìm hiểu về KTN <ArrowRight className="size-4" /></Link>
+              <Link href="/gioi-thieu">Tìm hiểu về chúng tôi <ArrowRight className="size-4" /></Link>
             </Button>
           </div>
         </div>
@@ -404,7 +396,7 @@ export default async function HomePage() {
             </div>
           ) : (
             <div className="rounded-3xl bg-white p-6 text-slate-800">
-              <EmptyState title="Chưa đăng dự án" description="Dự án thực tế sẽ được hiển thị sau khi KTN xuất bản trong hệ thống." />
+              <EmptyState title="Chưa đăng dự án" description="Dự án thực tế sẽ được hiển thị sau khi được xuất bản trong hệ thống." />
             </div>
           )}
         </div>
@@ -417,7 +409,7 @@ export default async function HomePage() {
             <div>
               <p className="section-kicker">Tin tức &amp; Hoạt động</p>
               <h2 className="mt-2 text-3xl font-extrabold text-navy sm:text-4xl">
-                Thông tin mới nhất từ KTN
+                Thông tin mới nhất
               </h2>
             </div>
             <Link href="/tin-tuc" className="inline-flex items-center gap-2 text-sm font-extrabold text-primary hover:text-navy">
@@ -443,10 +435,10 @@ export default async function HomePage() {
             <div>
               <p className="section-kicker">Kết nối trực tiếp</p>
               <h2 className="mt-2 text-balance text-3xl font-extrabold text-navy sm:text-4xl">
-                Gửi yêu cầu – KTN tư vấn tận tâm
+                Gửi yêu cầu – Đội ngũ tư vấn tận tâm
               </h2>
               <p className="mt-3 text-base leading-8 text-slate-600">
-                Hãy chia sẻ sơ bộ nhu cầu của anh/chị. Đội ngũ KTN sẽ liên hệ trực tiếp để tư vấn,
+                Hãy chia sẻ sơ bộ nhu cầu của anh/chị. Đội ngũ sẽ liên hệ trực tiếp để tư vấn,
                 khảo sát và lập phương án phù hợp.
               </p>
             </div>
