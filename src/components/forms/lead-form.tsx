@@ -29,9 +29,9 @@ import type { z } from "zod";
 
 type LeadFormValues = z.infer<typeof leadInputSchema>;
 
-function ErrorMessage({ message }: { message?: string }) {
+function ErrorMessage({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
-  return <p className="mt-1.5 text-xs font-medium text-destructive">{message}</p>;
+  return <p id={id} className="mt-1.5 text-xs font-medium text-destructive" role="alert">{message}</p>;
 }
 
 export function LeadForm({ source = "website-contact" }: { source?: string }) {
@@ -116,6 +116,7 @@ export function LeadForm({ source = "website-contact" }: { source?: string }) {
 
   return (
     <form
+      method="post"
       onSubmit={handleSubmit(onSubmit)}
       onFocusCapture={(event) => {
         if (interactionStartedAt === 0) setInteractionStartedAt(event.timeStamp);
@@ -138,18 +139,18 @@ export function LeadForm({ source = "website-contact" }: { source?: string }) {
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <Label htmlFor="fullName">Họ và tên *</Label>
-          <Input id="fullName" autoComplete="name" className="mt-2" {...register("fullName")} aria-invalid={Boolean(errors.fullName)} />
-          <ErrorMessage message={errors.fullName?.message} />
+          <Input id="fullName" autoComplete="name" className="mt-2" required aria-required="true" {...register("fullName")} aria-invalid={Boolean(errors.fullName)} aria-describedby={errors.fullName ? "fullName-error" : undefined} />
+          <ErrorMessage id="fullName-error" message={errors.fullName?.message} />
         </div>
         <div>
           <Label htmlFor="phone">Số điện thoại *</Label>
-          <Input id="phone" type="tel" inputMode="tel" autoComplete="tel" className="mt-2" {...register("phone")} aria-invalid={Boolean(errors.phone)} />
-          <ErrorMessage message={errors.phone?.message} />
+          <Input id="phone" type="tel" inputMode="tel" autoComplete="tel" className="mt-2" required aria-required="true" {...register("phone")} aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? "phone-error" : undefined} />
+          <ErrorMessage id="phone-error" message={errors.phone?.message} />
         </div>
         <div>
           <Label htmlFor="email">Email</Label>
           <Input id="email" type="email" autoComplete="email" className="mt-2" {...register("email")} aria-invalid={Boolean(errors.email)} />
-          <ErrorMessage message={errors.email?.message} />
+          <ErrorMessage id="email-error" message={errors.email?.message} />
         </div>
         <div>
           <Label htmlFor="sector">Lĩnh vực cần tư vấn *</Label>
@@ -157,8 +158,8 @@ export function LeadForm({ source = "website-contact" }: { source?: string }) {
             name="sector"
             control={control}
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger id="sector" className="mt-2 w-full" aria-invalid={Boolean(errors.sector)}>
+              <Select name={field.name} value={field.value} onValueChange={field.onChange} required>
+                <SelectTrigger id="sector" className="mt-2 w-full" aria-required="true" aria-invalid={Boolean(errors.sector)} aria-describedby={errors.sector ? "sector-error" : undefined}>
                   <SelectValue placeholder="Chọn lĩnh vực" />
                 </SelectTrigger>
                 <SelectContent>
@@ -169,17 +170,17 @@ export function LeadForm({ source = "website-contact" }: { source?: string }) {
               </Select>
             )}
           />
-          <ErrorMessage message={errors.sector?.message} />
+          <ErrorMessage id="sector-error" message={errors.sector?.message} />
         </div>
         <div>
           <Label htmlFor="province">Tỉnh/Thành phố *</Label>
-          <Input id="province" autoComplete="address-level1" className="mt-2" {...register("province")} aria-invalid={Boolean(errors.province)} />
-          <ErrorMessage message={errors.province?.message} />
+          <Input id="province" autoComplete="address-level1" className="mt-2" required aria-required="true" {...register("province")} aria-invalid={Boolean(errors.province)} aria-describedby={errors.province ? "province-error" : undefined} />
+          <ErrorMessage id="province-error" message={errors.province?.message} />
         </div>
         <div>
           <Label htmlFor="address">Địa chỉ</Label>
           <Input id="address" autoComplete="street-address" className="mt-2" {...register("address")} aria-invalid={Boolean(errors.address)} />
-          <ErrorMessage message={errors.address?.message} />
+          <ErrorMessage id="address-error" message={errors.address?.message} />
         </div>
       </div>
 
@@ -189,10 +190,13 @@ export function LeadForm({ source = "website-contact" }: { source?: string }) {
           id="message"
           className="mt-2 min-h-32"
           placeholder="Mô tả ngắn nhu cầu, quy mô hoặc vấn đề anh/chị đang cần KTN hỗ trợ..."
+          required
+          aria-required="true"
           {...register("message")}
           aria-invalid={Boolean(errors.message)}
+          aria-describedby={errors.message ? "message-error" : undefined}
         />
-        <ErrorMessage message={errors.message?.message} />
+        <ErrorMessage id="message-error" message={errors.message?.message} />
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
@@ -238,8 +242,8 @@ export function LeadForm({ source = "website-contact" }: { source?: string }) {
             name="preferredChannel"
             control={control}
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger id="preferredChannel" className="mt-2 w-full">
+              <Select name={field.name} value={field.value} onValueChange={field.onChange} required>
+                <SelectTrigger id="preferredChannel" className="mt-2 w-full" aria-required="true">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -261,6 +265,8 @@ export function LeadForm({ source = "website-contact" }: { source?: string }) {
             <div className="flex items-start gap-3">
               <Checkbox
                 id="privacyAccepted"
+                name={field.name}
+                required
                 checked={field.value}
                 onCheckedChange={(checked) => {
                   const value = checked === true;
@@ -268,6 +274,8 @@ export function LeadForm({ source = "website-contact" }: { source?: string }) {
                   setValue("privacyAccepted", value, { shouldValidate: true });
                 }}
                 aria-invalid={Boolean(errors.privacyAccepted)}
+                aria-required="true"
+                aria-describedby={errors.privacyAccepted ? "privacyAccepted-error" : undefined}
               />
               <Label htmlFor="privacyAccepted" className="text-sm font-normal leading-6 text-muted-foreground">
                 Tôi đồng ý để KTN sử dụng thông tin trên nhằm liên hệ và tư vấn theo{" "}
@@ -279,7 +287,7 @@ export function LeadForm({ source = "website-contact" }: { source?: string }) {
             </div>
           )}
         />
-        <ErrorMessage message={errors.privacyAccepted?.message} />
+        <ErrorMessage id="privacyAccepted-error" message={errors.privacyAccepted?.message} />
       </div>
 
       {serverError && (
@@ -304,3 +312,4 @@ export function LeadForm({ source = "website-contact" }: { source?: string }) {
     </form>
   );
 }
+

@@ -30,9 +30,9 @@ import {
   MAX_LEAD_ATTACHMENT_SIZE,
 } from "@/config/uploads";
 
-function ErrorMessage({ message }: { message?: string }) {
+function ErrorMessage({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
-  return <p className="mt-1 text-xs font-semibold text-destructive">{message}</p>;
+  return <p id={id} className="mt-1 text-xs font-semibold text-destructive" role="alert">{message}</p>;
 }
 
 export function RecruitmentForm({ defaultPosition = "dev" }: { defaultPosition?: string }) {
@@ -42,7 +42,7 @@ export function RecruitmentForm({ defaultPosition = "dev" }: { defaultPosition?:
   const [position, setPosition] = useState(defaultPosition);
   const [experience, setExperience] = useState("1-3-nam");
   const [message, setMessage] = useState("");
-  const [privacyAccepted, setPrivacyAccepted] = useState(true);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [file, setFile] = useState<File | null>(null);
 
   const [companyWebsite, setCompanyWebsite] = useState("");
@@ -147,9 +147,22 @@ export function RecruitmentForm({ defaultPosition = "dev" }: { defaultPosition?:
 
     try {
       const response = await fetch("/api/leads", { method: "POST", body: payload });
-      const result = (await response.json()) as { ok: boolean; message?: string };
+      const result = (await response.json()) as {
+        ok: boolean;
+        message?: string;
+        fields?: Record<string, string[]>;
+      };
 
       if (!response.ok || !result.ok) {
+        if (result.fields) {
+          setFieldErrors(
+            Object.fromEntries(
+              Object.entries(result.fields)
+                .filter(([, messages]) => messages?.[0])
+                .map(([field, messages]) => [field, messages[0]]),
+            ),
+          );
+        }
         setServerError(result.message || "Chưa thể gửi hồ sơ. Vui lòng thử lại hoặc gửi qua Email.");
         return;
       }
@@ -162,6 +175,7 @@ export function RecruitmentForm({ defaultPosition = "dev" }: { defaultPosition?:
       setEmail("");
       setMessage("");
       setFile(null);
+      setPrivacyAccepted(false);
     } catch {
       setServerError("Không thể kết nối hệ thống. Vui lòng gửi CV trực tiếp qua email tuyển dụng của KTN.");
     } finally {
@@ -182,6 +196,7 @@ export function RecruitmentForm({ defaultPosition = "dev" }: { defaultPosition?:
       </div>
 
       <form
+        method="post"
         onSubmit={handleSubmit}
         onFocusCapture={(event) => {
           if (interactionStartedAt === 0) setInteractionStartedAt(event.timeStamp);
@@ -207,14 +222,18 @@ export function RecruitmentForm({ defaultPosition = "dev" }: { defaultPosition?:
             </Label>
             <Input
               id="fullName"
+              name="fullName"
+              required
+              aria-required="true"
               placeholder="Ví dụ: Nguyễn Văn A"
               autoComplete="name"
               className="mt-1.5"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               aria-invalid={Boolean(fieldErrors.fullName)}
+              aria-describedby={fieldErrors.fullName ? "recruitment-fullName-error" : undefined}
             />
-            <ErrorMessage message={fieldErrors.fullName} />
+            <ErrorMessage id="recruitment-fullName-error" message={fieldErrors.fullName} />
           </div>
 
           <div>
@@ -223,15 +242,19 @@ export function RecruitmentForm({ defaultPosition = "dev" }: { defaultPosition?:
             </Label>
             <Input
               id="phone"
+              name="phone"
               type="tel"
+              required
+              aria-required="true"
               placeholder="0912345678"
               autoComplete="tel"
               className="mt-1.5"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               aria-invalid={Boolean(fieldErrors.phone)}
+              aria-describedby={fieldErrors.phone ? "recruitment-phone-error" : undefined}
             />
-            <ErrorMessage message={fieldErrors.phone} />
+            <ErrorMessage id="recruitment-phone-error" message={fieldErrors.phone} />
           </div>
         </div>
 
@@ -242,23 +265,27 @@ export function RecruitmentForm({ defaultPosition = "dev" }: { defaultPosition?:
             </Label>
             <Input
               id="email"
+              name="email"
               type="email"
+              required
+              aria-required="true"
               placeholder="example@gmail.com"
               autoComplete="email"
               className="mt-1.5"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               aria-invalid={Boolean(fieldErrors.email)}
+              aria-describedby={fieldErrors.email ? "recruitment-email-error" : undefined}
             />
-            <ErrorMessage message={fieldErrors.email} />
+            <ErrorMessage id="recruitment-email-error" message={fieldErrors.email} />
           </div>
 
           <div>
             <Label htmlFor="position" className="font-extrabold text-navy text-xs">
               Vị trí ứng tuyển *
             </Label>
-            <Select value={position} onValueChange={setPosition}>
-              <SelectTrigger id="position" className="mt-1.5 w-full">
+            <Select name="position" value={position} onValueChange={setPosition} required>
+              <SelectTrigger id="position" className="mt-1.5 w-full" aria-required="true">
                 <SelectValue placeholder="Chọn vị trí công việc" />
               </SelectTrigger>
               <SelectContent>
@@ -277,7 +304,7 @@ export function RecruitmentForm({ defaultPosition = "dev" }: { defaultPosition?:
             <Label htmlFor="experience" className="font-extrabold text-navy text-xs">
               Kinh nghiệm làm việc
             </Label>
-            <Select value={experience} onValueChange={setExperience}>
+            <Select name="experience" value={experience} onValueChange={setExperience}>
               <SelectTrigger id="experience" className="mt-1.5 w-full">
                 <SelectValue />
               </SelectTrigger>
@@ -298,6 +325,7 @@ export function RecruitmentForm({ defaultPosition = "dev" }: { defaultPosition?:
               <Paperclip className="pointer-events-none absolute left-3 top-3 size-4 text-slate-400" />
               <Input
                 id="cvFile"
+                name="attachment"
                 type="file"
                 className="pl-9 text-xs"
                 accept={LEAD_ATTACHMENT_ACCEPT}
@@ -320,6 +348,7 @@ export function RecruitmentForm({ defaultPosition = "dev" }: { defaultPosition?:
           </Label>
           <Textarea
             id="message"
+            name="message"
             className="mt-1.5 min-h-24 text-xs"
             placeholder="Tóm tắt điểm mạnh, dự án nổi bật hoặc câu hỏi dành cho KTN..."
             value={message}
@@ -331,9 +360,13 @@ export function RecruitmentForm({ defaultPosition = "dev" }: { defaultPosition?:
           <div className="flex items-start gap-2.5">
             <Checkbox
               id="recruitmentPrivacy"
+              name="privacyAccepted"
+              required
               checked={privacyAccepted}
               onCheckedChange={(checked) => setPrivacyAccepted(checked === true)}
               aria-invalid={Boolean(fieldErrors.privacyAccepted)}
+              aria-required="true"
+              aria-describedby={fieldErrors.privacyAccepted ? "recruitment-privacy-error" : undefined}
             />
             <Label htmlFor="recruitmentPrivacy" className="text-xs leading-5 text-slate-600 font-normal">
               Tôi cam kết thông tin cung cấp là chính xác và đồng ý cho KTN liên hệ theo{" "}
@@ -343,7 +376,7 @@ export function RecruitmentForm({ defaultPosition = "dev" }: { defaultPosition?:
               .
             </Label>
           </div>
-          <ErrorMessage message={fieldErrors.privacyAccepted} />
+          <ErrorMessage id="recruitment-privacy-error" message={fieldErrors.privacyAccepted} />
         </div>
 
         {serverError && (
@@ -381,3 +414,4 @@ export function RecruitmentForm({ defaultPosition = "dev" }: { defaultPosition?:
     </div>
   );
 }
+

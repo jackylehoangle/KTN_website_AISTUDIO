@@ -3,29 +3,37 @@ import Link from "next/link";
 import { ArrowRight, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHero } from "@/components/site/page-hero";
+import { ProjectCard } from "@/components/site/project-card";
+import { getPublishedProjects } from "@/lib/data/public-content";
 import { createMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = createMetadata({
-  title: "Dự án - Đang cập nhật",
-  description: "Thông tin và hồ sơ dự án thực tế của KTN đang trong quá trình cập nhật và hoàn thiện.",
+  title: "Dự án thực tế",
+  description: "Hồ sơ dự án công nghệ, điện mặt trời, xây dựng và cải tạo do KTN triển khai.",
   path: "/du-an",
 });
 
 export const revalidate = 300;
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const projects = await getPublishedProjects();
+
   return (
     <>
       <PageHero
         kicker="Dự án KTN"
-        title="Thông tin dự án đang được cập nhật"
-        description="Hồ sơ năng lực, giải pháp và hình ảnh các dự án thực tế thuộc 3 lĩnh vực Công nghệ, Năng lượng và Xây dựng cải tạo đang trong quá trình tổng hợp."
+        title="Công trình & Giải pháp đã triển khai"
+        description="Hồ sơ năng lực, giải pháp và hình ảnh thực tế thuộc ba lĩnh vực Công nghệ, Năng lượng và Xây dựng cải tạo."
         breadcrumbs={[{ label: "Dự án" }]}
       />
       <section className="section-shell bg-white">
-        <div className="site-container max-w-4xl">
-          {/* Main Updating Banner Card */}
-          <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-amber-50/30 p-8 shadow-lg sm:p-12 text-center">
+        <div className={projects.length > 0 ? "site-container" : "site-container max-w-4xl"}>
+          {projects.length > 0 ? (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {projects.map((project) => <ProjectCard key={project.id} project={project} />)}
+            </div>
+          ) : (
+          <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-amber-50/30 p-8 text-center shadow-lg sm:p-12">
             <div className="pointer-events-none absolute -right-16 -top-16 size-60 rounded-full bg-orange/10 blur-3xl" aria-hidden="true" />
             <div className="pointer-events-none absolute -left-16 -bottom-16 size-60 rounded-full bg-cyan/10 blur-3xl" aria-hidden="true" />
 
@@ -82,9 +90,11 @@ export default function ProjectsPage() {
               </div>
             </div>
           </div>
+          )}
         </div>
       </section>
     </>
   );
 }
+
 

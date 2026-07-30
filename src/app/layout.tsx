@@ -19,6 +19,25 @@ export const metadata: Metadata = {
   authors: [{ name: siteConfig.name }],
   creator: siteConfig.name,
   publisher: siteConfig.name,
+  category: "Công nghệ, năng lượng và xây dựng",
+  keywords: [
+    "KTN",
+    "công nghệ doanh nghiệp",
+    "điện mặt trời",
+    "xây dựng và cải tạo",
+    "TP. Hồ Chí Minh",
+  ],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   formatDetection: {
     email: false,
     address: false,
@@ -39,6 +58,9 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     images: [siteConfig.ogImage],
   },
+  alternates: {
+    canonical: siteConfig.url,
+  },
 };
 
 export const viewport: Viewport = {
@@ -58,3 +80,4 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     </html>
   );
 }
+

@@ -23,7 +23,7 @@ export function MobileNavigation() {
           <Menu className="size-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[min(90vw,380px)] p-0">
+      <SheetContent side="right" className="flex w-[min(90vw,380px)] flex-col overflow-hidden p-0">
         <SheetHeader className="border-b p-5 text-left">
           <SheetTitle className="sr-only">Điều hướng website KTN</SheetTitle>
           <Logo />
@@ -31,7 +31,7 @@ export function MobileNavigation() {
             Danh sách các trang trên website KTN
           </SheetDescription>
         </SheetHeader>
-        <nav className="flex flex-col p-4" aria-label="Điều hướng di động">
+        <nav className="flex min-h-0 flex-1 flex-col overflow-y-auto p-4 pb-2" aria-label="Điều hướng di động">
           {mainNavigation.map((item) => (
             <SheetClose asChild key={item.href}>
               <Link
@@ -58,7 +58,7 @@ export function MobileNavigation() {
             ))}
           </div>
         </nav>
-        <div className="absolute inset-x-4 bottom-5">
+        <div className="shrink-0 border-t bg-white p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <Button asChild className="w-full bg-orange hover:bg-orange/90">
             <a href={`tel:${siteConfig.phone}`}>
               <Phone /> Gọi {siteConfig.phoneDisplay}
@@ -69,3 +69,4 @@ export function MobileNavigation() {
     </Sheet>
   );
 }
+
