@@ -10,6 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/linh-vuc/ktn-tech",
     "/linh-vuc/ktn-solar",
     "/linh-vuc/ktn-build",
+    "/du-an",
     "/tuyen-dung",
     "/tin-tuc",
     "/lien-he",
@@ -18,12 +19,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const [projects, posts] = await Promise.all([getPublishedProjects(), getPublishedPosts()]);
-  const now = new Date();
-
   return [
     ...staticPaths.map((path, index) => ({
       url: new URL(path || "/", siteConfig.url).toString(),
-      lastModified: now,
       changeFrequency: index === 0 ? ("weekly" as const) : ("monthly" as const),
       priority: index === 0 ? 1 : 0.7,
     })),
@@ -41,3 +39,4 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 }
+
