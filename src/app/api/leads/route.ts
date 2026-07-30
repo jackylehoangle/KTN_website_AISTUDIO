@@ -49,6 +49,31 @@ function safeFileName(name: string) {
   return `${base || "tep-dinh-kem"}${extension.toLowerCase()}`;
 }
 
+function hasAllowedFileSignature(bytes: Uint8Array, extension: string) {
+  const startsWith = (...signature: number[]) =>
+    signature.every((value, index) => bytes[index] === value);
+
+  if (extension === "pdf") return startsWith(0x25, 0x50, 0x44, 0x46);
+  if (extension === "jpg" || extension === "jpeg") return startsWith(0xff, 0xd8, 0xff);
+  if (extension === "png") return startsWith(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a);
+  if (extension === "webp") {
+    return (
+      startsWith(0x52, 0x49, 0x46, 0x46) &&
+      bytes[8] === 0x57 &&
+      bytes[9] === 0x45 &&
+      bytes[10] === 0x42 &&
+      bytes[11] === 0x50
+    );
+  }
+  if (["docx", "xlsx"].includes(extension)) {
+    return startsWith(0x50, 0x4b, 0x03, 0x04) || startsWith(0x50, 0x4b, 0x05, 0x06);
+  }
+  if (["doc", "xls"].includes(extension)) {
+    return startsWith(0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1);
+  }
+  return false;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const requestOrigin = request.headers.get("origin");
@@ -104,6 +129,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (parsed.data.source === "tuyen-dung-online" && !parsed.data.email) {
+      return jsonError(
+        "Vui lòng kiểm tra lại thông tin.",
+        422,
+        { email: ["Vui lòng nhập email để KTN phản hồi hồ sơ."] },
+      );
+    }
+
     const attachmentValue = formData.get("attachment");
     const attachment =
       attachmentValue instanceof File && attachmentValue.size > 0
@@ -120,6 +153,10 @@ export async function POST(request: NextRequest) {
         !ALLOWED_FILE_EXTENSIONS.has(extension)
       ) {
         return jsonError("Định dạng tệp chưa được hỗ trợ.");
+      }
+      const signature = new Uint8Array((await attachment.slice(0, 16).arrayBuffer()));
+      if (!hasAllowedFileSignature(signature, extension)) {
+        return jsonError("Nội dung tệp không khớp với định dạng đã chọn.");
       }
     }
 
@@ -241,3 +278,4 @@ export async function POST(request: NextRequest) {
     return jsonError("Có lỗi xảy ra. Vui lòng thử lại sau.", 500);
   }
 }
+
