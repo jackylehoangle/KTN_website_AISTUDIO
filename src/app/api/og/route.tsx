@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
   try {
@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
                 color: "#F97316",
               }}
             >
-              ktngroup.vn
+              congtyktn.vn
             </div>
           </div>
 
@@ -131,3 +131,4 @@ export async function GET(req: NextRequest) {
     return new Response("Failed to generate OG image", { status: 500 });
   }
 }
+
