@@ -135,6 +135,7 @@ html {
 
 body {
   min-height: 100vh;
+  overflow-x: clip;
   background: var(--background);
   color: var(--foreground);
   text-rendering: optimizeLegibility;
@@ -245,6 +246,14 @@ select {
   .site-container {
     width: min(100% - 1.25rem, 76rem);
   }
+
+  .section-shell {
+    padding-block: 3.5rem;
+  }
+
+  .prose-ktn {
+    overflow-wrap: anywhere;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -261,3 +270,4 @@ select {
     animation-iteration-count: 1 !important;
   }
 }
+
