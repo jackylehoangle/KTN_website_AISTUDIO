@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
   const webhookUrl = process.env.N8N_CHAT_WEBHOOK_URL;
   if (!webhookUrl) {
     return NextResponse.json(
-      { ok: false, message: "Trá»£ lĂ½ KTN Ä‘ang Ä‘Æ°á»£c cáº¥u hĂ¬nh. Vui lĂ²ng thá»­ láº¡i sau." },
+      { ok: false, message: "Trợ lý KTN đang được cấu hình. Vui lòng thử lại sau." },
       { status: 503 },
     );
   }
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     }
   } catch {
     return NextResponse.json(
-      { ok: false, message: "Cáº¥u hĂ¬nh trá»£ lĂ½ KTN chÆ°a há»£p lá»‡." },
+      { ok: false, message: "Cấu hình trợ lý KTN chưa hợp lệ." },
       { status: 503 },
     );
   }
@@ -51,14 +51,14 @@ export async function POST(request: NextRequest) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ ok: false, message: "Dá»¯ liá»‡u gá»­i lĂªn khĂ´ng há»£p lá»‡." }, { status: 400 });
+    return NextResponse.json({ ok: false, message: "Dữ liệu gửi lên không hợp lệ." }, { status: 400 });
   }
 
   const message = typeof body.message === "string" ? body.message.trim() : "";
   const sessionId = typeof body.sessionId === "string" ? body.sessionId.slice(0, 120) : "";
   if (!message || message.length > MAX_MESSAGE_LENGTH || !sessionId) {
     return NextResponse.json(
-      { ok: false, message: "Vui lĂ²ng nháº­p ná»™i dung tá»« 1 Ä‘áº¿n 2.000 kĂ½ tá»±." },
+      { ok: false, message: "Vui lòng nhập nội dung từ 1 đến 2.000 ký tự." },
       { status: 422 },
     );
   }
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
     if (!response.ok) {
       console.error("n8n chat webhook failed", { status: response.status });
       return NextResponse.json(
-        { ok: false, message: "Trá»£ lĂ½ KTN chÆ°a thá»ƒ pháº£n há»“i. Vui lĂ²ng thá»­ láº¡i." },
+        { ok: false, message: "Trợ lý KTN chưa thể phản hồi. Vui lòng thử lại." },
         { status: 502 },
       );
     }
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
     const reply = extractReply(payload);
     if (!reply) {
       return NextResponse.json(
-        { ok: false, message: "Trá»£ lĂ½ KTN chÆ°a nháº­n Ä‘Æ°á»£c ná»™i dung pháº£n há»“i." },
+        { ok: false, message: "Trợ lý KTN chưa nhận được nội dung phản hồi." },
         { status: 502 },
       );
     }
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("KTN chat request failed", error);
     return NextResponse.json(
-      { ok: false, message: "Káº¿t ná»‘i trá»£ lĂ½ KTN bá»‹ giĂ¡n Ä‘oáº¡n. Vui lĂ²ng thá»­ láº¡i." },
+      { ok: false, message: "Kết nối trợ lý KTN bị gián đoạn. Vui lòng thử lại." },
       { status: 502 },
     );
   } finally {
