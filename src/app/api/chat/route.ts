@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 export const runtime = "nodejs";
 
 const MAX_MESSAGE_LENGTH = 2_000;
-const REQUEST_TIMEOUT_MS = 45_000;
+const REQUEST_TIMEOUT_MS = 90_000;
 
 function extractReply(payload: unknown): string | null {
   if (typeof payload === "string") return payload.trim() || null;
@@ -122,4 +122,3 @@ export async function POST(request: NextRequest) {
     clearTimeout(timeout);
   }
 }
-
