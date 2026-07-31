@@ -1,4 +1,5 @@
 import { ContactDock } from "@/components/site/contact-dock";
+import { Chatbox } from "@/components/site/chatbox";
 import { SiteFooter } from "@/components/site/footer";
 import { SiteHeader } from "@/components/site/header";
 import { JsonLd } from "@/components/site/json-ld";
@@ -35,6 +36,7 @@ export default function WebsiteLayout({ children }: { children: React.ReactNode 
       <SiteHeader />
       <main className="flex-1 pt-20">{children}</main>
       <SiteFooter />
+      <Chatbox />
       <ContactDock />
     </div>
   );
