@@ -49,6 +49,34 @@ function safeFileName(name: string) {
   return `${base || "tep-dinh-kem"}${extension.toLowerCase()}`;
 }
 
+function optionalText(formData: FormData, key: string, maxLength = 500) {
+  const value = String(formData.get(key) ?? "").trim();
+  return value ? value.slice(0, maxLength) : null;
+}
+
+function getSourceMetadata(request: NextRequest, formData: FormData) {
+  const pageUrl = optionalText(formData, "pageUrl", 1000);
+  let siteDomain = request.nextUrl.host;
+  if (pageUrl) {
+    try {
+      siteDomain = new URL(pageUrl).host || siteDomain;
+    } catch {
+      // Keep the verified request host when a submitted page URL is malformed.
+    }
+  }
+
+  return {
+    site_domain: siteDomain,
+    page_url: pageUrl,
+    referrer: optionalText(formData, "referrer", 1000),
+    utm_source: optionalText(formData, "utm_source", 200),
+    utm_medium: optionalText(formData, "utm_medium", 200),
+    utm_campaign: optionalText(formData, "utm_campaign", 200),
+    utm_content: optionalText(formData, "utm_content", 200),
+    utm_term: optionalText(formData, "utm_term", 200),
+  };
+}
+
 function hasAllowedFileSignature(bytes: Uint8Array, extension: string) {
   const startsWith = (...signature: number[]) =>
     signature.every((value, index) => bytes[index] === value);
@@ -171,7 +199,108 @@ export async function POST(request: NextRequest) {
     }
 
     const ipHash = hashIp(getRequestIp(request), ipSalt);
+    const sourceMetadata = getSourceMetadata(request, formData);
     const windowStart = new Date(Date.now() - 15 * 60 * 1000).toISOString();
+
+    if (parsed.data.source === "tuyen-dung-online") {
+      const { count, error: applicationRateLimitError } = await supabase
+        .from(databaseTables.applications)
+        .select("id", { count: "exact", head: true })
+        .eq("ip_hash", ipHash)
+        .gte("created_at", windowStart);
+
+      if (applicationRateLimitError) {
+        console.error("Application rate limit check failed", applicationRateLimitError);
+        return jsonError("Chưa thể kiểm tra hồ sơ. Vui lòng thử lại sau.", 503);
+      }
+      if ((count ?? 0) >= 5) {
+        return jsonError("Bạn đã gửi nhiều hồ sơ. Vui lòng thử lại sau ít phút.", 429);
+      }
+
+      const applicationId = randomUUID();
+      let applicationAttachmentPath: string | null = null;
+      if (attachment) {
+        applicationAttachmentPath = `${applicationId}/${randomUUID()}-${safeFileName(attachment.name)}`;
+        const { error: uploadError } = await supabase.storage
+          .from(storageBuckets.applicationFiles)
+          .upload(applicationAttachmentPath, Buffer.from(await attachment.arrayBuffer()), {
+            contentType: attachment.type,
+            upsert: false,
+          });
+        if (uploadError) {
+          return jsonError("Không thể tải CV lên. Vui lòng thử lại hoặc gửi không kèm tệp.", 500);
+        }
+      }
+
+      const { error: applicationError } = await supabase
+        .from(databaseTables.applications)
+        .insert({
+          id: applicationId,
+          full_name: parsed.data.fullName,
+          phone: parsed.data.phone,
+          email: parsed.data.email,
+          position: optionalText(formData, "position", 200) ?? parsed.data.sector,
+          experience: optionalText(formData, "experience", 200),
+          note: optionalText(formData, "note", 3000),
+          privacy_accepted: parsed.data.privacyAccepted,
+          source: parsed.data.source,
+          ...sourceMetadata,
+          ip_hash: ipHash,
+          user_agent: request.headers.get("user-agent")?.slice(0, 500) ?? null,
+        });
+
+      if (applicationError) {
+        console.error("Application insert failed", applicationError);
+        if (applicationAttachmentPath) {
+          await supabase.storage
+            .from(storageBuckets.applicationFiles)
+            .remove([applicationAttachmentPath]);
+        }
+        return jsonError("Chưa thể lưu hồ sơ. Vui lòng thử lại.", 500);
+      }
+
+      if (attachment && applicationAttachmentPath) {
+        const { error: attachmentError } = await supabase
+          .from(databaseTables.applicationAttachments)
+          .insert({
+            application_id: applicationId,
+            storage_path: applicationAttachmentPath,
+            original_name: attachment.name.slice(0, 255),
+            mime_type: attachment.type,
+            size_bytes: attachment.size,
+          });
+        if (attachmentError) {
+          console.error("Application attachment metadata failed", attachmentError);
+        }
+      }
+
+      try {
+        await notifyNewLead({
+          id: applicationId,
+          fullName: parsed.data.fullName,
+          phone: parsed.data.phone,
+          email: parsed.data.email,
+          sector: `Ứng tuyển: ${optionalText(formData, "position", 200) ?? parsed.data.sector}`,
+          province: parsed.data.province,
+          address: null,
+          message: parsed.data.message,
+          preferredChannel: "email",
+          attachmentName: attachment?.name,
+        });
+      } catch (error) {
+        console.error("Application notification email failed", error);
+      }
+
+      return NextResponse.json(
+        {
+          ok: true,
+          id: applicationId,
+          message: "KTN đã nhận hồ sơ và sẽ phản hồi trong thời gian sớm nhất.",
+        },
+        { status: 201 },
+      );
+    }
+
     const { count, error: rateLimitError } = await supabase
       .from(databaseTables.leads)
       .select("id", { count: "exact", head: true })
@@ -218,6 +347,7 @@ export async function POST(request: NextRequest) {
       privacy_accepted: data.privacyAccepted,
       status: "new",
       source: data.source,
+      ...sourceMetadata,
       ip_hash: ipHash,
       user_agent: request.headers.get("user-agent")?.slice(0, 500) ?? null,
     });
@@ -278,4 +408,3 @@ export async function POST(request: NextRequest) {
     return jsonError("Có lỗi xảy ra. Vui lòng thử lại sau.", 500);
   }
 }
-
