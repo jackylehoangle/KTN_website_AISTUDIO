@@ -16,7 +16,7 @@ type ChatMessage = {
 const welcomeMessage: ChatMessage = {
   id: "welcome",
   role: "assistant",
-  content: "Xin chĂ o! TĂ´i lĂ  trá»£ lĂ½ trá»±c tuyáº¿n cá»§a KTN. Anh/chá»‹ Ä‘ang cáº§n tÆ° váº¥n vá» CĂ´ng nghá»‡, Äiá»‡n máº·t trá»i hay XĂ¢y dá»±ng & Cáº£i táº¡o?",
+  content: "Xin chào! Tôi là trợ lý trực tuyến của KTN. Anh/chị đang cần tư vấn về Công nghệ, Điện mặt trời hay Xây dựng & Cải tạo?",
 };
 
 function createSessionId() {
@@ -68,7 +68,7 @@ export function Chatbox() {
           role: "assistant",
           content: response.ok && result.reply
             ? result.reply
-            : result.message || "Trá»£ lĂ½ KTN chÆ°a thá»ƒ pháº£n há»“i. Anh/chá»‹ vui lĂ²ng thá»­ láº¡i.",
+            : result.message || "Trợ lý KTN chưa thể phản hồi. Anh/chị vui lòng thử lại.",
         },
       ]);
     } catch {
@@ -77,7 +77,7 @@ export function Chatbox() {
         {
           id: crypto.randomUUID(),
           role: "assistant",
-          content: "Káº¿t ná»‘i Ä‘ang bá»‹ giĂ¡n Ä‘oáº¡n. Anh/chá»‹ cĂ³ thá»ƒ gá»i hotline **0877 008 216** Ä‘á»ƒ Ä‘Æ°á»£c há»— trá»£ ngay.",
+          content: "Kết nối đang bị gián đoạn. Anh/chị có thể gọi hotline **0877 008 216** để được hỗ trợ ngay.",
         },
       ]);
     } finally {
@@ -89,7 +89,7 @@ export function Chatbox() {
     <div className="fixed bottom-[max(8.75rem,calc(env(safe-area-inset-bottom)+8.75rem))] right-3 z-50 sm:bottom-40 sm:right-6 print:hidden">
       {isOpen && (
         <section
-          aria-label="Trá»£ lĂ½ trá»±c tuyáº¿n KTN"
+          aria-label="Trợ lý trực tuyến KTN"
           className="absolute bottom-16 right-0 flex h-[min(34rem,calc(100dvh-8rem))] w-[min(24rem,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-3xl border bg-white shadow-2xl shadow-navy/20"
         >
           <header className="flex items-center gap-3 bg-navy px-4 py-3.5 text-white">
@@ -97,13 +97,13 @@ export function Chatbox() {
               <Bot className="size-5" />
             </span>
             <div className="min-w-0 flex-1">
-              <h2 className="font-black">Trá»£ lĂ½ KTN</h2>
-              <p className="text-xs text-white/75">TÆ° váº¥n trá»±c tuyáº¿n 24/7</p>
+              <h2 className="font-black">Trợ lý KTN</h2>
+              <p className="text-xs text-white/75">Tư vấn trực tuyến 24/7</p>
             </div>
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              aria-label="ÄĂ³ng cá»­a sá»• trĂ² chuyá»‡n"
+              aria-label="Đóng cửa sổ trò chuyện"
               className="grid size-9 place-items-center rounded-full transition hover:bg-white/10"
             >
               <X className="size-5" />
@@ -134,7 +134,7 @@ export function Chatbox() {
             {isSending && (
               <div className="flex w-fit items-center gap-2 rounded-2xl rounded-bl-md border bg-white px-3.5 py-3 text-sm text-muted-foreground shadow-sm">
                 <Loader2 className="size-4 animate-spin" />
-                KTN Ä‘ang tráº£ lá»i...
+                KTN đang trả lời...
               </div>
             )}
             <div ref={scrollAnchor} />
@@ -145,8 +145,8 @@ export function Chatbox() {
               <Input
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
-                placeholder="Nháº­p cĂ¢u há»i cá»§a anh/chá»‹..."
-                aria-label="Ná»™i dung trĂ² chuyá»‡n"
+                placeholder="Nhập câu hỏi của anh/chị..."
+                aria-label="Nội dung trò chuyện"
                 maxLength={2_000}
                 disabled={isSending}
                 autoComplete="off"
@@ -154,7 +154,7 @@ export function Chatbox() {
               <Button
                 type="submit"
                 size="icon"
-                aria-label="Gá»­i tin nháº¯n"
+                aria-label="Gửi tin nhắn"
                 disabled={!input.trim() || isSending}
                 className="shrink-0 bg-orange hover:bg-orange/90"
               >
@@ -162,7 +162,7 @@ export function Chatbox() {
               </Button>
             </div>
             <p className="mt-2 text-center text-[10px] text-muted-foreground">
-              KhĂ´ng chia sáº» máº­t kháº©u hoáº·c thĂ´ng tin thanh toĂ¡n trong há»™i thoáº¡i.
+              Không chia sẻ mật khẩu hoặc thông tin thanh toán trong hội thoại.
             </p>
           </form>
         </section>
@@ -171,7 +171,7 @@ export function Chatbox() {
       <button
         type="button"
         onClick={() => setIsOpen((current) => !current)}
-        aria-label={isOpen ? "ÄĂ³ng trá»£ lĂ½ KTN" : "Má»Ÿ trá»£ lĂ½ KTN"}
+        aria-label={isOpen ? "Đóng trợ lý KTN" : "Mở trợ lý KTN"}
         aria-expanded={isOpen}
         className="group relative grid size-12 place-items-center rounded-full bg-primary text-white shadow-xl shadow-primary/35 transition hover:scale-110 hover:bg-primary/90 sm:size-13"
       >
@@ -179,7 +179,7 @@ export function Chatbox() {
         {isOpen ? <X className="relative size-6" /> : <MessageCircle className="relative size-6" />}
         {!isOpen && (
           <span className="pointer-events-none absolute right-15 whitespace-nowrap rounded-xl bg-navy px-3.5 py-2 text-xs font-black text-white opacity-0 shadow-xl transition group-hover:opacity-100">
-            Chat trá»±c tiáº¿p vá»›i KTN
+            Chat trực tiếp với KTN
           </span>
         )}
       </button>
