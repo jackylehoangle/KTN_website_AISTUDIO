@@ -82,6 +82,13 @@ export function LeadForm({ source = "website-contact" }: { source?: string }) {
       : 0;
     payload.append("elapsedMs", String(elapsedMs));
     payload.append("companyWebsite", companyWebsite);
+    payload.append("pageUrl", window.location.href);
+    payload.append("referrer", document.referrer);
+    const searchParams = new URLSearchParams(window.location.search);
+    for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
+      const value = searchParams.get(key);
+      if (value) payload.append(key, value);
+    }
     if (file) payload.append("attachment", file);
 
     try {
@@ -312,4 +319,3 @@ export function LeadForm({ source = "website-contact" }: { source?: string }) {
     </form>
   );
 }
-
