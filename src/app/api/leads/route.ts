@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
     }
 
     const elapsed = Number(formData.get("elapsedMs"));
-    if (!Number.isFinite(elapsed) || elapsed < 2500 || elapsed > 7_200_000) {
+    if (!Number.isFinite(elapsed) || elapsed < 0 || elapsed > 7_200_000) {
       return jsonError("Phiên gửi biểu mẫu không hợp lệ. Vui lòng tải lại trang.");
     }
 
