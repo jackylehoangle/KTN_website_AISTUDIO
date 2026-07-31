@@ -139,6 +139,16 @@ export function RecruitmentForm({ defaultPosition = "dev" }: { defaultPosition?:
     payload.append("preferredChannel", "email");
     payload.append("privacyAccepted", "true");
     payload.append("source", "tuyen-dung-online");
+    payload.append("position", positionLabelMap[position] || position);
+    payload.append("experience", expLabelMap[experience] || experience);
+    payload.append("note", message.trim());
+    payload.append("pageUrl", window.location.href);
+    payload.append("referrer", document.referrer);
+    const searchParams = new URLSearchParams(window.location.search);
+    for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
+      const value = searchParams.get(key);
+      if (value) payload.append(key, value);
+    }
 
     const elapsedMs = interactionStartedAt > 0 ? event.timeStamp - interactionStartedAt : 4000;
     payload.append("elapsedMs", String(elapsedMs));
@@ -414,4 +424,3 @@ export function RecruitmentForm({ defaultPosition = "dev" }: { defaultPosition?:
     </div>
   );
 }
-
