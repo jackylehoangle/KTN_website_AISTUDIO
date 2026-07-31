@@ -166,21 +166,38 @@ export async function POST(request: NextRequest) {
     source_name: sourceName,
   };
 
-  let lookupQuery = supabase
-    .from(databaseTables.posts)
-    .select("id,status,published_at")
-    .limit(1);
+  let existing: { id: string; status: string; published_at: string | null } | null = null;
 
-  lookupQuery = automationKey
-    ? lookupQuery.eq("automation_key", automationKey)
-    : lookupQuery.eq("slug", slug);
+  if (automationKey) {
+    const { data: automationRows, error: automationLookupError } = await supabase
+      .from(databaseTables.posts)
+      .select("id,status,published_at")
+      .eq("automation_key", automationKey)
+      .limit(1);
 
-  const { data: existingRows, error: lookupError } = await lookupQuery;
-  const existing = existingRows?.[0] ?? null;
+    if (automationLookupError) {
+      console.error("Automation post key lookup failed", automationLookupError);
+      return jsonError("Không thể kiểm tra bài viết hiện có.", 500);
+    }
 
-  if (lookupError) {
-    console.error("Automation post lookup failed", lookupError);
-    return jsonError("KhĂ´ng thá»ƒ kiá»ƒm tra bĂ i viáº¿t hiá»‡n cĂ³.", 500);
+    existing = automationRows?.[0] ?? null;
+  }
+
+  // Older automated posts were identified only by slug. This fallback lets the
+  // first new delivery backfill automation_key instead of inserting a duplicate.
+  if (!existing) {
+    const { data: slugRows, error: slugLookupError } = await supabase
+      .from(databaseTables.posts)
+      .select("id,status,published_at")
+      .eq("slug", slug)
+      .limit(1);
+
+    if (slugLookupError) {
+      console.error("Automation post slug lookup failed", slugLookupError);
+      return jsonError("Không thể kiểm tra bài viết hiện có.", 500);
+    }
+
+    existing = slugRows?.[0] ?? null;
   }
 
   const query = existing
