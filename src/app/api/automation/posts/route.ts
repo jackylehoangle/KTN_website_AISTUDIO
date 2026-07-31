@@ -31,6 +31,10 @@ const automationPostSchema = z.object({
   seo_title: optionalText(180),
   seoDescription: optionalText(300),
   seo_description: optionalText(300),
+  seo: z.object({
+    title: optionalText(180),
+    description: optionalText(300),
+  }).optional(),
   sourceUrl: optionalText(2_000),
   source_url: optionalText(2_000),
   sourceName: optionalText(300),
@@ -142,6 +146,7 @@ export async function POST(request: NextRequest) {
   const supabase = getSupabaseServiceClient();
   if (!supabase) return jsonError("Supabase chÆ°a Ä‘Æ°á»£c cáº¥u hĂ¬nh.", 503);
 
+  const automationKey = data.externalId ?? data.external_id ?? null;
   const payload = {
     title: data.title,
     slug,
@@ -153,15 +158,25 @@ export async function POST(request: NextRequest) {
       data.status === "published"
         ? requestedPublishedAt ?? new Date().toISOString()
         : null,
-    seo_title: data.seoTitle ?? data.seo_title ?? null,
-    seo_description: data.seoDescription ?? data.seo_description ?? null,
+    seo_title: data.seoTitle ?? data.seo_title ?? data.seo?.title ?? null,
+    seo_description:
+      data.seoDescription ?? data.seo_description ?? data.seo?.description ?? null,
+    automation_key: automationKey,
+    source_url: sourceUrl,
+    source_name: sourceName,
   };
 
-  const { data: existing, error: lookupError } = await supabase
+  let lookupQuery = supabase
     .from(databaseTables.posts)
     .select("id,status,published_at")
-    .eq("slug", slug)
-    .maybeSingle();
+    .limit(1);
+
+  lookupQuery = automationKey
+    ? lookupQuery.eq("automation_key", automationKey)
+    : lookupQuery.eq("slug", slug);
+
+  const { data: existingRows, error: lookupError } = await lookupQuery;
+  const existing = existingRows?.[0] ?? null;
 
   if (lookupError) {
     console.error("Automation post lookup failed", lookupError);
@@ -173,7 +188,7 @@ export async function POST(request: NextRequest) {
     : supabase.from(databaseTables.posts).insert(payload);
 
   const { data: saved, error: saveError } = await query
-    .select("id,title,slug,status,published_at,created_at,updated_at")
+    .select("id,title,slug,status,published_at,automation_key,source_url,created_at,updated_at")
     .single();
 
   if (saveError) {
