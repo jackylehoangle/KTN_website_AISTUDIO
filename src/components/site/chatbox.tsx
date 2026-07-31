@@ -16,7 +16,7 @@ type ChatMessage = {
 const welcomeMessage: ChatMessage = {
   id: "welcome",
   role: "assistant",
-  content: "Xin chào! Tôi là trợ lý trực tuyến của KTN. Anh/chị đang cần tư vấn về Công nghệ, Điện mặt trời hay Xây dựng & Cải tạo?",
+  content: "Xin chào! Em là trợ lý trực tuyến của KTN. Em có thể biết tên để tiện xưng hô không ạ?",
 };
 
 function createSessionId() {
@@ -68,7 +68,7 @@ export function Chatbox() {
           role: "assistant",
           content: response.ok && result.reply
             ? result.reply
-            : result.message || "Trợ lý KTN chưa thể phản hồi. Anh/chị vui lòng thử lại.",
+            : result.message || "Trợ lý KTN chưa thể phản hồi. Vui lòng thử lại.",
         },
       ]);
     } catch {
@@ -77,7 +77,7 @@ export function Chatbox() {
         {
           id: crypto.randomUUID(),
           role: "assistant",
-          content: "Kết nối đang bị gián đoạn. Anh/chị có thể gọi hotline **0877 008 216** để được hỗ trợ ngay.",
+          content: "Kết nối đang bị gián đoạn. Có thể gọi hotline **0877 008 216** để được hỗ trợ ngay.",
         },
       ]);
     } finally {
@@ -145,7 +145,7 @@ export function Chatbox() {
               <Input
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
-                placeholder="Nhập câu hỏi của anh/chị..."
+                placeholder="Nhập câu hỏi tại đây..."
                 aria-label="Nội dung trò chuyện"
                 maxLength={2_000}
                 disabled={isSending}
@@ -186,4 +186,3 @@ export function Chatbox() {
     </div>
   );
 }
-
