@@ -41,8 +41,8 @@ export function Chatbox() {
     if (!message || isSending) return;
 
     if (!sessionId.current) {
-      sessionId.current = sessionStorage.getItem("ktn-chat-session") || createSessionId();
-      sessionStorage.setItem("ktn-chat-session", sessionId.current);
+      sessionId.current = localStorage.getItem("ktn-chat-session") || createSessionId();
+      localStorage.setItem("ktn-chat-session", sessionId.current);
     }
 
     const userMessage: ChatMessage = {
@@ -186,3 +186,4 @@ export function Chatbox() {
     </div>
   );
 }
+
